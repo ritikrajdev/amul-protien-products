@@ -27,6 +27,12 @@ class AmulRequest:
         with sync_playwright() as p:
             browser = p.chromium.launch()
             page = browser.new_page()
+            page.set_extra_http_headers({
+                "accept": "application/json, text/plain, */*",
+                "accept-language": "en-GB,en-US;q=0.9,en;q=0.8",
+                "priority": "u=1, i",
+                "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36"
+            })
             self._set_pincode(page)
             for product_url in product_urls:
                 try:
