@@ -1,0 +1,19 @@
+[project]
+name = "amul-protien-products"
+version = "0.0.1"
+description = "A simple script to monitor Amul Protien products availability."
+authors = [
+    {name = "Ritik Rajdev",email = "56875929+ritikrajdev@users.noreply.github.com"}
+]
+license = {text = "MIT"}
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "pytest-playwright (>=0.7.1,<0.8.0)",
+    "dotenv (>=0.9.9,<0.10.0)"
+]
+
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
