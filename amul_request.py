@@ -1,9 +1,4 @@
-import stat
-import string
-from time import sleep
-
-from requests import head
-from config import AMUL_SHOP_URL, DEFAULT_PIN_CODE, ENTER_KEY, ENTER_YOUR_PINCODE_PLACEHOLDER, PINCODE_SEARCH_ITEM_CLASS, RETRY_LIMIT, SOLD_OUT_TEXT
+from config import AMUL_SHOP_URL, DEFAULT_PIN_CODE, ENTER_KEY, ENTER_YOUR_PINCODE_PLACEHOLDER, PINCODE_SEARCH_ITEM_CLASS, SOLD_OUT_TEXT
 from playwright.sync_api import sync_playwright
 
 
