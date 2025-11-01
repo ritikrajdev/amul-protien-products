@@ -6,10 +6,14 @@ from utils.notification import send_notification
 
 def main():
     amul_request = AmulRequest()
+    product_urls = []
     for product in PRODUCTS:
-        is_available = amul_request.request_product_availability(product["url"])
+        product_urls.append(product["url"])
+    status = amul_request.request_product_availability(product_urls)
+    for product, is_available in zip(PRODUCTS, status):
         if is_available:
-            send_notification(title=product["name"], body="is now available", url=product["url"])
+            print(f"{product['name']} is now available!")
+            send_notification(product["name"], "is now available!", product["url"])
 
 if __name__ == "__main__":
     main()

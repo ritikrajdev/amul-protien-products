@@ -1,21 +1,15 @@
 from os import getenv
 from dotenv import load_dotenv
+from json import load
 load_dotenv()
 
 DEFAULT_PIN_CODE = "560037"
 RETRY_LIMIT = 3
-PRODUCTS = [
-    # {
-    #     "name": "Amul High Protein Rose Lassi",
-    #     "url": "https://shop.amul.com/en/product/amul-high-protein-rose-lassi-200-ml-or-pack-of-30"
-    # },
-    {
-        "name": "Amul High Protein Blueberry Shake",
-        "url": "https://shop.amul.com/en/product/amul-high-protein-blueberry-shake-200-ml-or-pack-of-8"
-    }
-]
-BARK_API_TOKEN = getenv("BARK_API_TOKEN", None)
-
+with open("products.json", "r") as f:
+    PRODUCTS = load(f)
+BARK_API_TOKENS = getenv("BARK_API_TOKENS", None)
+AMUL_SHOP_URL = "https://shop.amul.com/en/"
+AMUL_ICON_URL = "https://shop.amul.com/s/62fa94df8c13af2e242eba16/683693f8d8088fe70feaba1b/logo-36x36-c.png"
 
 
 # Programmatic constants

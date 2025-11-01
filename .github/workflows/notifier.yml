@@ -1,0 +1,25 @@
+name: "Amul Protein Products Notifier"
+on:
+  schedule:
+    - cron: '0 * * * *'
+  workflow_dispatch:
+
+jobs:
+    notify:
+        runs-on: ubuntu-latest
+        steps:
+            - name: "Checkout Repository"
+              uses: actions/checkout@v5
+              with:
+                fetch-depth: 1
+            
+            - name: "install dependencies"
+              run: |
+                pip install -r requirements.txt
+                playwright install chromium
+            
+            - name: "Run Notifier Script"
+              run: |
+                python main.py
+              env:
+                BARK_API_TOKENS: ${{ secrets.BARK_API_TOKENS }}
