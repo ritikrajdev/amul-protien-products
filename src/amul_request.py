@@ -1,4 +1,5 @@
-from config import AMUL_SHOP_URL, DEFAULT_PIN_CODE, ENTER_KEY, ENTER_YOUR_PINCODE_PLACEHOLDER, PINCODE_SEARCH_ITEM_CLASS, SOLD_OUT_TEXT
+from time import sleep
+from config import AMUL_SHOP_URL, DEFAULT_PIN_CODE, ENTER_KEY, ENTER_YOUR_PINCODE_PLACEHOLDER, PINCODE_SEARCH_ITEM_CLASS, RETRY_LIMIT, SOLD_OUT_TEXT
 from playwright.sync_api import sync_playwright, Page
 from utils.logger import logger
 
@@ -65,38 +66,35 @@ class AmulRequest:
             with sync_playwright() as p:
                 logger.debug("Launching Chromium browser")
                 browser = p.chromium.launch()
-                context = browser.new_context()
-                logger.debug("Starting tracing with screenshots, snapshots, and sources")
-                context.tracing.start(screenshots=True, snapshots=True, sources=True)
-
-                page = context.new_page()
+                page = browser.new_page()
 
                 for idx, product_url in enumerate(product_urls, 1):
-                    try:
-                        logger.info(
-                            f"Checking product {idx}/{len(product_urls)}: {product_url}")
-                        page.goto(product_url)
+                    for retry in range(RETRY_LIMIT):
+                        if retry: sleep(2 ** retry)  # Exponential backoff
+                        logger.debug(f"Attempt {retry + 1} for product URL: {product_url}")
+                        try:
+                            logger.info(
+                                f"Checking product {idx}/{len(product_urls)}: {product_url}")
+                            page.goto(product_url)
 
-                        if self._is_asking_for_pincode(page):
-                            logger.debug("Setting pincode")
-                            self._set_pincode(page)
+                            if self._is_asking_for_pincode(page):
+                                logger.debug("Setting pincode")
+                                self._set_pincode(page)
 
-                        logger.debug("Waiting for 'Add to Cart' button")
-                        page.wait_for_selector('[title="Add to Cart"]')
+                            logger.debug("Waiting for 'Add to Cart' button")
+                            page.wait_for_selector('[title="Add to Cart"]', timeout=5000)
 
-                        availability_status = not page.evaluate(
-                            f"document.body.innerText.includes('{SOLD_OUT_TEXT}')")
-                        status.append(availability_status)
+                            availability_status = not page.evaluate(
+                                f"document.body.innerText.includes('{SOLD_OUT_TEXT}')")
+                            status.append(availability_status)
 
-                        logger.info(
-                            f"Product {idx} availability: {'Available' if availability_status else 'Sold Out'}")
-                    except Exception as e:
-                        logger.error(
-                            f"Error checking product at {product_url}: {e}", exc_info=True)
-                        status.append(False)
-
-                logger.debug("Stopping tracing and saving to trace.zip")
-                context.tracing.stop(path = "trace.zip")
+                            logger.info(
+                                f"Product {idx} availability: {'Available' if availability_status else 'Sold Out'}")
+                            break  # Exit retry loop on success
+                        except Exception as e:
+                            logger.error(
+                                f"Error checking product at {product_url}: {e}", exc_info=True)
+                            # We'll retry on exception only
 
                 logger.debug("Closing browser")
                 browser.close()
