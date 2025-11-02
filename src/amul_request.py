@@ -54,7 +54,7 @@ class AmulRequest:
         try:
             with sync_playwright() as p:
                 logger.debug("Launching Chromium browser")
-                browser = p.chromium.launch()
+                browser = p.chromium.launch(headless=False)
                 page = browser.new_page()
 
                 self._set_pincode(page)
@@ -64,7 +64,8 @@ class AmulRequest:
                         logger.info(
                             f"Checking product {idx}/{len(product_urls)}: {product_url}")
                         page.goto(product_url)
-                        
+
+                        page.wait_for_timeout(2000)  # Wait for 2 seconds to ensure page loads
                         logger.debug(page.content())
 
                         logger.debug("Waiting for 'Add to Cart' button")
