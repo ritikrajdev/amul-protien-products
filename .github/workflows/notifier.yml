@@ -22,8 +22,9 @@ jobs:
               env:
                 BARK_API_TOKENS: ${{ secrets.BARK_API_TOKENS }}
             
-            - name: Upload trace
-              uses: actions/upload-artifact@v5
+            - name: "Upload traces"
+              uses: actions/upload-artifact@v3
               with:
-                name: playwright-trace
+                name: trace
                 path: trace.zip
+                retention-days: 1
