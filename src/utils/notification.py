@@ -1,6 +1,7 @@
 from notifications import IOSNotification
 
-def send_notification(title: str, body: str="", url: str=""):
+
+def send_notification(title: str, body: str = "", url: str = ""):
     """Sends notification on any supported platform.
 
     Args:
@@ -10,5 +11,3 @@ def send_notification(title: str, body: str="", url: str=""):
     """
     ios_handler = IOSNotification()
     ios_handler.send(title=title, body=body, url=url)
-    
-
