@@ -64,7 +64,7 @@ class AmulRequest:
         try:
             with sync_playwright() as p:
                 logger.debug("Launching Chromium browser")
-                browser = p.chromium.launch(headless=False)
+                browser = p.chromium.launch()
                 context = browser.new_context()
                 logger.debug("Starting tracing with screenshots, snapshots, and sources")
                 context.tracing.start(screenshots=True, snapshots=True, sources=True)
