@@ -1,6 +1,8 @@
 name: "Amul Protein Products Notifier"
 on:
   workflow_dispatch:
+  schedule:
+    - cron: "0 * * * *"  # Runs every hour
 
 jobs:
     notify:
