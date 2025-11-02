@@ -14,10 +14,10 @@ jobs:
             - name: "install dependencies"
               run: |
                 pip install -r requirements.txt
-                playwright install --with-deps chromium
-            
+                playwright install chromium
+
             - name: "Run Notifier Script"
               run: |
-                python main.py
+                python src/main.py
               env:
                 BARK_API_TOKENS: ${{ secrets.BARK_API_TOKENS }}
