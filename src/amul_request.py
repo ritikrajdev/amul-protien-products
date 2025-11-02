@@ -64,6 +64,8 @@ class AmulRequest:
                         logger.info(
                             f"Checking product {idx}/{len(product_urls)}: {product_url}")
                         page.goto(product_url)
+                        
+                        logger.debug(page.content())
 
                         logger.debug("Waiting for 'Add to Cart' button")
                         page.wait_for_selector('[title="Add to Cart"]')
