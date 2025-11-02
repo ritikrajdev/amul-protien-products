@@ -1,1 +1,1 @@
-from .ios import IOSNotification
+from .ntfysh import NftyShNotification

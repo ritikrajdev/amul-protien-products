@@ -8,6 +8,7 @@ RETRY_LIMIT = 3
 with open("products.json", "r") as f:
     PRODUCTS = load(f)
 BARK_API_TOKENS = getenv("BARK_API_TOKENS", None)
+NFTY_SH_TOPIC = getenv("NFTY_SH_TOPIC", None)
 AMUL_SHOP_URL = "https://shop.amul.com/en/"
 AMUL_ICON_URL = "https://shop.amul.com/s/62fa94df8c13af2e242eba16/683693f8d8088fe70feaba1b/logo-36x36-c.png"
 
