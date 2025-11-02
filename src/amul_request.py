@@ -7,6 +7,25 @@ class AmulRequest:
     def __init__(self):
         logger.debug("AmulRequest instance initialized")
 
+    def _is_asking_for_pincode(self, page: Page) -> bool:
+        """Check if the page is asking for a pincode.
+
+        Args:
+            page: Playwright page object
+        Returns:
+            bool: True if pincode is being asked, False otherwise.
+        """
+        try:
+            logger.debug(
+                f"Checking for pincode input field with placeholder: {ENTER_YOUR_PINCODE_PLACEHOLDER}")
+            page.wait_for_selector(
+                f'input[placeholder="{ENTER_YOUR_PINCODE_PLACEHOLDER}"]', timeout=2000)
+            logger.info("Pincode input field found")
+            return True
+        except Exception:
+            logger.info("Pincode input field not found")
+            return False
+
     def _set_pincode(self, page: Page) -> None:
         """Set the pincode for product availability check.
 
@@ -14,15 +33,6 @@ class AmulRequest:
             page: Playwright page object
         """
         try:
-            logger.info(f"Navigating to {AMUL_SHOP_URL}")
-            page.goto(AMUL_SHOP_URL)
-
-            logger.debug(
-                f"Waiting for pincode input field with placeholder: {ENTER_YOUR_PINCODE_PLACEHOLDER}")
-            page.wait_for_selector(
-                f'input[placeholder="{ENTER_YOUR_PINCODE_PLACEHOLDER}"]')
-
-            logger.info(f"Setting pincode to: {DEFAULT_PIN_CODE}")
             page.fill(
                 f'input[placeholder="{ENTER_YOUR_PINCODE_PLACEHOLDER}"]', DEFAULT_PIN_CODE)
 
@@ -55,9 +65,11 @@ class AmulRequest:
             with sync_playwright() as p:
                 logger.debug("Launching Chromium browser")
                 browser = p.chromium.launch(headless=False)
-                page = browser.new_page()
+                context = browser.new_context()
+                logger.debug("Starting tracing with screenshots, snapshots, and sources")
+                context.tracing.start(screenshots=True, snapshots=True, sources=True)
 
-                self._set_pincode(page)
+                page = context.new_page()
 
                 for idx, product_url in enumerate(product_urls, 1):
                     try:
@@ -65,8 +77,9 @@ class AmulRequest:
                             f"Checking product {idx}/{len(product_urls)}: {product_url}")
                         page.goto(product_url)
 
-                        page.wait_for_timeout(2000)  # Wait for 2 seconds to ensure page loads
-                        logger.debug(page.content())
+                        if self._is_asking_for_pincode(page):
+                            logger.debug("Setting pincode")
+                            self._set_pincode(page)
 
                         logger.debug("Waiting for 'Add to Cart' button")
                         page.wait_for_selector('[title="Add to Cart"]')
@@ -81,6 +94,9 @@ class AmulRequest:
                         logger.error(
                             f"Error checking product at {product_url}: {e}", exc_info=True)
                         status.append(False)
+
+                logger.debug("Stopping tracing and saving to trace.zip")
+                context.tracing.stop(path = "trace.zip")
 
                 logger.debug("Closing browser")
                 browser.close()

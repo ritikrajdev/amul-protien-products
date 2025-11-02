@@ -21,3 +21,9 @@ jobs:
                 python src/main.py
               env:
                 BARK_API_TOKENS: ${{ secrets.BARK_API_TOKENS }}
+            
+            - name: Upload trace
+              uses: actions/upload-artifact@v5
+              with:
+                name: playwright-trace
+                path: trace.zip
