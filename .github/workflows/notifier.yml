@@ -23,3 +23,4 @@ jobs:
                 python src/main.py
               env:
                 BARK_API_TOKENS: ${{ secrets.BARK_API_TOKENS }}
+                NFTY_SH_TOPIC: ${{ secrets.NFTY_SH_TOPIC }}
